@@ -52,6 +52,9 @@ flags.DEFINE_string('master', '', 'BNS name of the tensorflow server')
 
 flags.DEFINE_integer('task', 0, 'The task ID.')
 
+flags.DEFINE_boolean('gpu_allow_growth', True,
+                     'Boolean value of config.gpu_options.allow_growth.')
+
 # Settings for logging.
 
 flags.DEFINE_string('train_logdir', None,
@@ -318,6 +321,7 @@ def main(unused_argv):
     # Soft placement allows placing on CPU ops without GPU implementation.
     session_config = tf.ConfigProto(
         allow_soft_placement=True, log_device_placement=False)
+    session_config.gpu_options.allow_growth = FLAGS.gpu_allow_growth
 
     # Start the training.
     slim.learning.train(
