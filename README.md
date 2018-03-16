@@ -20,3 +20,11 @@ Add `gpu_allow_growth` parameter in `train.py`, default value is `True` which me
 Modified files:
 
 - `train.py`
+
+### Add `max_to_keep` parameter in `train.py`
+
+Add `max_to_keep` parameter in `train.py`, default value is `5` which means the 5 most recent checkpoint files are kept. If `0`, all checkpoint files are kept.
+
+Modified files:
+
+- `train.py`

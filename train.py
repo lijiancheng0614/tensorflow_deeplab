@@ -69,6 +69,9 @@ flags.DEFINE_integer('save_interval_secs', 1200,
 flags.DEFINE_integer('save_summaries_secs', 600,
                      'How often, in seconds, we compute the summaries.')
 
+flags.DEFINE_integer('max_to_keep', 5,
+                     'The maximum number of recent checkpoint files to keep.')
+
 # Settings for training strategry.
 
 flags.DEFINE_enum('learning_policy', 'poly', ['poly', 'step'],
@@ -323,6 +326,9 @@ def main(unused_argv):
         allow_soft_placement=True, log_device_placement=False)
     session_config.gpu_options.allow_growth = FLAGS.gpu_allow_growth
 
+    # Save checkpoints regularly.
+    saver = tf.train.Saver(max_to_keep=FLAGS.max_to_keep)
+
     # Start the training.
     slim.learning.train(
         train_tensor,
@@ -340,6 +346,7 @@ def main(unused_argv):
             last_layers,
             ignore_missing_vars=True),
         summary_op=summary_op,
+        saver=saver,
         save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs)
 
