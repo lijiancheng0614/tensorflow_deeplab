@@ -32,6 +32,9 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string('master', '', 'BNS name of the tensorflow server')
 
+flags.DEFINE_boolean('gpu_allow_growth', True,
+                     'Boolean value of config.gpu_options.allow_growth.')
+
 # Settings for log directories.
 
 flags.DEFINE_string('eval_logdir', None, 'Where to write the event logs.')
@@ -158,6 +161,9 @@ def main(unused_argv):
     num_eval_iters = None
     if FLAGS.max_number_of_evaluations > 0:
       num_eval_iters = FLAGS.max_number_of_evaluations
+
+    session_config = tf.ConfigProto()
+    session_config.gpu_options.allow_growth = FLAGS.gpu_allow_growth
     slim.evaluation.evaluation_loop(
         master=FLAGS.master,
         checkpoint_dir=FLAGS.checkpoint_dir,
@@ -165,7 +171,8 @@ def main(unused_argv):
         num_evals=num_batches,
         eval_op=metrics_to_updates.values(),
         max_number_of_evaluations=num_eval_iters,
-        eval_interval_secs=FLAGS.eval_interval_secs)
+        eval_interval_secs=FLAGS.eval_interval_secs,
+        session_config=session_config)
 
 
 if __name__ == '__main__':
