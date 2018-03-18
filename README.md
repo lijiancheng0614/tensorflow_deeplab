@@ -2,6 +2,19 @@
 
 Forked from https://github.com/tensorflow/models/tree/master/research/deeplab
 
+## Usage
+
+1. Install dependencies by following the [installation instructions](g3doc/installation.md).
+
+2. Add libraries to PYTHONPATH.
+
+    ```
+    git clone https://github.com/lijiancheng0614/tensorflow_deeplab deeplab
+    export PYTHONPATH=$PYTHONPATH:`pwd`
+    git clone https://github.com/tensorflow/models.git
+    export PYTHONPATH=$PYTHONPATH:`pwd`/models/research/slim
+    ```
+
 
 ## Updates
 
