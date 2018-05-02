@@ -86,6 +86,9 @@ flags.DEFINE_enum('colormap_type', 'pascal', ['pascal', 'cityscapes'],
 flags.DEFINE_boolean('also_save_raw_predictions', False,
                      'Also save raw predictions.')
 
+flags.DEFINE_boolean('also_save_original_images', False,
+                     'Also save original images.')
+
 flags.DEFINE_integer('max_number_of_iterations', 0,
                      'Maximum number of visualization iterations. Will loop '
                      'indefinitely upon nonpositive values.')
@@ -97,10 +100,10 @@ _SEMANTIC_PREDICTION_SAVE_FOLDER = 'segmentation_results'
 _RAW_SEMANTIC_PREDICTION_SAVE_FOLDER = 'raw_segmentation_results'
 
 # The format to save image.
-_IMAGE_FORMAT = '%06d_image'
+_IMAGE_FORMAT = '{}_image'
 
 # The format to save prediction
-_PREDICTION_FORMAT = '%06d_prediction'
+_PREDICTION_FORMAT = '{}_prediction'
 
 # To evaluate Cityscapes results on the evaluation server, the labels used
 # during training should be mapped to the labels for evaluation.
@@ -157,19 +160,20 @@ def _process_batch(sess, original_images, semantic_predictions, image_names,
   for i in range(num_image):
     image_height = np.squeeze(image_heights[i])
     image_width = np.squeeze(image_widths[i])
-    original_image = np.squeeze(original_images[i])
     semantic_prediction = np.squeeze(semantic_predictions[i])
     crop_semantic_prediction = semantic_prediction[:image_height, :image_width]
 
     # Save image.
-    save_annotation.save_annotation(
-        original_image, save_dir, _IMAGE_FORMAT % (image_id_offset + i),
-        add_colormap=False)
+    if FLAGS.also_save_original_images:
+      original_image = np.squeeze(original_images[i])
+      save_annotation.save_annotation(
+          original_image, save_dir, _IMAGE_FORMAT.format(image_names[i].split('.')[0]),
+          add_colormap=False)
 
     # Save prediction.
     save_annotation.save_annotation(
         crop_semantic_prediction, save_dir,
-        _PREDICTION_FORMAT % (image_id_offset + i), add_colormap=True,
+        _PREDICTION_FORMAT.format(image_names[i].split('.')[0]), add_colormap=True,
         colormap_type=FLAGS.colormap_type)
 
     if FLAGS.also_save_raw_predictions:
