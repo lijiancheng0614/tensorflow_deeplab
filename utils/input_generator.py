@@ -36,12 +36,7 @@ def _get_data(data_provider, dataset_split):
     image_name: Image name.
     height: Image height.
     width: Image width.
-
-  Raises:
-    ValueError: Failed to find label.
   """
-  if common.LABELS_CLASS not in data_provider.list_items():
-    raise ValueError('Failed to find labels.')
 
   image, height, width = data_provider.get(
       [common.IMAGE, common.HEIGHT, common.WIDTH])
@@ -53,7 +48,7 @@ def _get_data(data_provider, dataset_split):
     image_name = tf.constant('')
 
   label = None
-  if dataset_split != common.TEST_SET:
+  if common.LABELS_CLASS in data_provider.list_items() and dataset_split != common.TEST_SET:
     label, = data_provider.get([common.LABELS_CLASS])
 
   return image, label, image_name, height, width
@@ -104,8 +99,7 @@ def get(dataset,
     A dictionary of batched Tensors for semantic segmentation.
 
   Raises:
-    ValueError: dataset_split is None, failed to find labels, or label shape
-      is not valid.
+    ValueError: dataset_split is None, or label shape is not valid.
   """
   if dataset_split is None:
     raise ValueError('Unknown dataset split.')

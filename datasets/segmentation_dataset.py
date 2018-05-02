@@ -80,6 +80,9 @@ _PASCAL_VOC_SEG_INFORMATION = DatasetDescriptor(
         'train': 1464,
         'trainval': 2913,
         'val': 1449,
+        'trainaug': 10582,
+        'trainaugval' : 12031,
+        'test': 1456,
     },
     num_classes=21,
     ignore_label=255,
@@ -140,10 +143,6 @@ def get_dataset(dataset_name, split_name, dataset_dir):
           (), tf.int64, default_value=0),
       'image/width': tf.FixedLenFeature(
           (), tf.int64, default_value=0),
-      'image/segmentation/class/encoded': tf.FixedLenFeature(
-          (), tf.string, default_value=''),
-      'image/segmentation/class/format': tf.FixedLenFeature(
-          (), tf.string, default_value='png'),
   }
   items_to_handlers = {
       'image': tfexample_decoder.Image(
@@ -153,11 +152,18 @@ def get_dataset(dataset_name, split_name, dataset_dir):
       'image_name': tfexample_decoder.Tensor('image/filename'),
       'height': tfexample_decoder.Tensor('image/height'),
       'width': tfexample_decoder.Tensor('image/width'),
-      'labels_class': tfexample_decoder.Image(
-          image_key='image/segmentation/class/encoded',
-          format_key='image/segmentation/class/format',
-          channels=1),
   }
+  if split_name != 'test':
+      keys_to_features[
+          'image/segmentation/class/encoded'] = tf.FixedLenFeature(
+              (), tf.string, default_value='')
+      keys_to_features[
+          'image/segmentation/class/format'] = tf.FixedLenFeature(
+              (), tf.string, default_value='png')
+      items_to_handlers['labels_class'] = tfexample_decoder.Image(
+              image_key='image/segmentation/class/encoded',
+              format_key='image/segmentation/class/format',
+              channels=1)
 
   decoder = tfexample_decoder.TFExampleDecoder(
       keys_to_features, items_to_handlers)
